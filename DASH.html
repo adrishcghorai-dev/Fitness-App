@@ -1,145 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Fitness App | Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Fitness App | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } 
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } 
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 🔴 SAME FIREBASE CONFIG AS LOGIN PAGE
-    const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyDZunpvvg849oe1iM5Otbp4DlBdHMO9nbg",
   authDomain: "fitnessapp-9e628.firebaseapp.com",
   projectId: "fitnessapp-9e628",
   storageBucket: "fitnessapp-9e628.firebasestorage.app",
   messagingSenderId: "1003393693095",
-  appId: "1:1003393693095:web:59ba4600e685e77b9e7282",
-  measurementId: "G-GFW49JWKDG"
+  appId: "1:1003393693095:web:59ba4600e685e77b9e7282"
 };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    const userNameEl = document.getElementById("username");
-    const goalEl = document.getElementById("goal");
-    const statsEl = document.getElementById("stats");
+/* ---------- CONSTANTS ---------- */
+const GOAL_TIME = 1800; // 30 min
+const CIRCUM = 283;
 
-    // 🔐 Protect dashboard
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "sign.html"; // back to login
-        return;
-      }
+/* Calories per minute by goal */
+const CAL_RATE = {
+  weight_loss: 8,
+  muscle_gain: 6,
+  endurance: 7
+};
 
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
+/* ---------- STATE ---------- */
+let userData = {};
+let activeWorkout = null;
+let seconds = 0;
+let calories = 0;
+let interval = null;
+let paused = false;
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        userNameEl.innerText = data.name;
-        goalEl.innerText = data.goal;
-        statsEl.innerText = `
-Age: ${data.age}
-Height: ${data.height} cm
-Weight: ${data.weight} kg
-        `;
-      }
-    });
+/* ---------- HELPERS ---------- */
+const today = (d = new Date()) => d.toISOString().split("T")[0];
 
-    window.logout = async function () {
-      await signOut(auth);
-      window.location.href = "sign.html";
-    };
-  </script>
+function setProgress(id, sec) {
+  const percent = Math.min(sec / GOAL_TIME, 1);
+  document.getElementById(id).style.strokeDashoffset =
+    CIRCUM - percent * CIRCUM;
+}
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f2027;
-      color: #fff;
+function show(section) {
+  ["dashboard", "workout"].forEach(id =>
+    document.getElementById(id).style.display = "none"
+  );
+  document.getElementById(section).style.display = "block";
+}
+
+/* ---------- WORKOUT ---------- */
+window.startWorkout = type => {
+  activeWorkout = type;
+  seconds = 0;
+  calories = 0;
+  paused = false;
+
+  document.getElementById("wName").innerText = type.toUpperCase();
+  document.getElementById("timer").innerText = "00:00";
+  document.getElementById("cal").innerText = "0";
+  document.getElementById("pauseBtn").innerText = "Pause";
+
+  show("workout");
+
+  interval = setInterval(() => {
+    if (!paused) {
+      seconds++;
+      calories += CAL_RATE[userData.goal] / 60;
+
+      document.getElementById("timer").innerText =
+        `${Math.floor(seconds/60)}:${(seconds%60).toString().padStart(2,"0")}`;
+      document.getElementById("cal").innerText = calories.toFixed(1);
     }
+  }, 1000);
+};
 
-    .header {
-      padding: 20px;
-      background: #1e1e1e;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+window.togglePause = () => {
+  paused = !paused;
+  document.getElementById("pauseBtn").innerText =
+    paused ? "Resume" : "Pause";
+};
 
-    .header h2 {
-      margin: 0;
-      color: #ff7a18;
-    }
+window.finishWorkout = async () => {
+  clearInterval(interval);
+  const user = auth.currentUser;
+  const ref = doc(db, "users", user.uid, "workouts", today());
+  const snap = await getDoc(ref);
+  const prev = snap.exists() ? snap.data() : {};
 
-    .header button {
-      background: #ff7a18;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+  await setDoc(ref, {
+    [activeWorkout]: (prev[activeWorkout] || 0) + seconds,
+    calories: (prev.calories || 0) + Math.round(calories)
+  }, { merge: true });
 
-    .content {
-      padding: 20px;
-    }
+  show("dashboard");
+  loadDashboard(user);
+};
 
-    .card {
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    }
+/* ---------- DASHBOARD ---------- */
+async function loadDashboard(user) {
+  /* user info */
+  const uSnap = await getDoc(doc(db, "users", user.uid));
+  userData = uSnap.data();
+  document.getElementById("goal").innerText = userData.goal.replace("_", " ");
 
-    .card h3 {
-      margin-top: 0;
-      color: #ff9f43;
-    }
+  /* today progress */
+  const tSnap = await getDoc(doc(db, "users", user.uid, "workouts", today()));
+  const data = tSnap.exists() ? tSnap.data() : {};
 
-    pre {
-      white-space: pre-line;
-      font-family: inherit;
+  setProgress("runP", data.running || 0);
+  setProgress("pushP", data.pushups || 0);
+  setProgress("yogaP", data.yoga || 0);
+  document.getElementById("todayCal").innerText = data.calories || 0;
+
+  /* weekly history */
+  let history = "";
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const snap = await getDoc(
+      doc(db, "users", user.uid, "workouts", today(d))
+    );
+    if (snap.exists()) {
+      const v = snap.data();
+      history += `${today(d)} → ⏱ ${Object.values(v)
+        .filter(x => typeof x === "number")
+        .reduce((a,b)=>a+b,0)} sec | 🔥 ${v.calories || 0} cal\n`;
     }
-  </style>
+  }
+  document.getElementById("history").innerText = history || "No data yet";
+}
+
+/* ---------- AUTH ---------- */
+onAuthStateChanged(auth, user => {
+  if (!user) window.location.href = "sign.html";
+  else loadDashboard(user);
+});
+
+window.logout = async () => {
+  await signOut(auth);
+  window.location.href = "sign.html";
+};
+</script>
+
+<style>
+body { margin:0;font-family:Arial;background:#0f2027;color:white }
+.header{background:#1e1e1e;padding:15px;display:flex;justify-content:space-between}
+.card{background:#1e1e1e;margin:15px;padding:20px;border-radius:12px}
+.exercise-grid{display:flex;gap:20px}
+.exercise{text-align:center;cursor:pointer}
+circle{fill:none;stroke-width:8}
+.bg{stroke:#333}
+.progress{stroke:#ff7a18;stroke-dasharray:283;stroke-dashoffset:283;
+transform:rotate(-90deg);transform-origin:50% 50%}
+#workout{display:none;text-align:center;padding-top:40px}
+button{background:#ff7a18;border:none;padding:10px 20px;border-radius:8px;font-weight:bold}
+pre{white-space:pre-line}
+</style>
 </head>
 
 <body>
 
 <div class="header">
-  <h2>Fitness Dashboard</h2>
+  <h3>Fitness Dashboard</h3>
   <button onclick="logout()">Logout</button>
 </div>
 
-<div class="content">
+<div id="dashboard">
+
   <div class="card">
-    <h3>Welcome, <span id="username">User</span> 👋</h3>
-    <p>Your goal: <strong id="goal"></strong></p>
+    <h3>Goal: <span id="goal"></span></h3>
+    <p>🔥 Calories Today: <strong id="todayCal">0</strong></p>
   </div>
 
   <div class="card">
-    <h3>Your Stats</h3>
-    <pre id="stats"></pre>
+    <h3>Today's Workouts</h3>
+    <div class="exercise-grid">
+
+      <div class="exercise" onclick="startWorkout('running')">
+        <svg width="100" height="100">
+          <circle class="bg" cx="50" cy="50" r="45"/>
+          <circle class="progress" id="runP" cx="50" cy="50" r="45"/>
+        </svg><p>🏃 Running</p>
+      </div>
+
+      <div class="exercise" onclick="startWorkout('pushups')">
+        <svg width="100" height="100">
+          <circle class="bg" cx="50" cy="50" r="45"/>
+          <circle class="progress" id="pushP" cx="50" cy="50" r="45"/>
+        </svg><p>💪 Pushups</p>
+      </div>
+
+      <div class="exercise" onclick="startWorkout('yoga')">
+        <svg width="100" height="100">
+          <circle class="bg" cx="50" cy="50" r="45"/>
+          <circle class="progress" id="yogaP" cx="50" cy="50" r="45"/>
+        </svg><p>🧘 Yoga</p>
+      </div>
+
+    </div>
   </div>
 
   <div class="card">
-    <h3>Quick Actions</h3>
-    <ul>
-      <li>🏋️ Start Workout (coming soon)</li>
-      <li>🥗 View Diet Plan (coming soon)</li>
-      <li>📈 Track Progress (coming soon)</li>
-    </ul>
+    <h3>Weekly History</h3>
+    <pre id="history"></pre>
   </div>
+
+</div>
+
+<div id="workout">
+  <h2 id="wName"></h2>
+  <h1 id="timer">00:00</h1>
+  <h3>🔥 Calories: <span id="cal">0</span></h3>
+  <button id="pauseBtn" onclick="togglePause()">Pause</button>
+  <br><br>
+  <button onclick="finishWorkout()">Finish Workout</button>
 </div>
 
 </body>
