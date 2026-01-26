@@ -1,0 +1,244 @@
+<style>
+/* Import a futuristic font for the full effect */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+
+:root {
+  --neon-gold: #FFD700;
+  --neon-blue: #4169E1;
+  --deep-bg: #050510;
+  --glass-panel: rgba(10, 25, 60, 0.65);
+  --glass-border: rgba(65, 105, 225, 0.3);
+}
+
+body { 
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  /* Deep Radial Gradient Background */
+  background: radial-gradient(circle at 50% -20%, #1a2a6c, #000000);
+  background-attachment: fixed;
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* ---------- HEADER ---------- */
+.header {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--neon-blue);
+  box-shadow: 0 0 20px rgba(65, 105, 225, 0.4);
+  backdrop-filter: blur(5px);
+}
+
+.header h3 {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  color: var(--neon-gold);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+  letter-spacing: 1px;
+}
+
+/* ---------- CARDS ---------- */
+.card {
+  background: var(--glass-panel);
+  margin: 20px;
+  padding: 25px;
+  border-radius: 16px;
+  /* Glassmorphism Border */
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Crazy Hover Light Effect */
+.card:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: var(--neon-gold);
+  box-shadow: 
+    0 0 20px rgba(65, 105, 225, 0.4), 
+    inset 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+h3 {
+  color: var(--neon-blue);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+#goal {
+  color: var(--neon-gold);
+  font-weight: bold;
+  text-shadow: 0 0 5px var(--neon-gold);
+}
+
+/* ---------- EXERCISE GRID ---------- */
+.exercise-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.exercise {
+  text-align: center;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.exercise:hover {
+  background: rgba(255, 215, 0, 0.05);
+  box-shadow: 0 0 30px rgba(65, 105, 225, 0.3);
+}
+
+.exercise p {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #ddd;
+  transition: color 0.3s;
+}
+
+.exercise:hover p {
+  color: var(--neon-gold);
+}
+
+/* ---------- SVG CHARTS ---------- */
+circle {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.bg {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.progress {
+  stroke: var(--neon-gold);
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  /* Neon glow on the line */
+  filter: drop-shadow(0 0 4px var(--neon-gold));
+}
+
+/* ---------- WORKOUT SCREEN ---------- */
+#workout {
+  display: none;
+  text-align: center;
+  padding-top: 40px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#wName {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.5rem;
+  color: var(--neon-blue);
+  text-shadow: 0 0 15px var(--neon-blue);
+  margin-bottom: 10px;
+}
+
+#timer {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 5rem;
+  margin: 10px 0;
+  color: #fff;
+  text-shadow: 
+    0 0 10px #fff,
+    0 0 20px var(--neon-gold),
+    0 0 40px var(--neon-gold);
+}
+
+#cal {
+  color: var(--neon-gold);
+  font-weight: bold;
+}
+
+/* ---------- BUTTONS ---------- */
+button {
+  background: transparent;
+  color: var(--neon-gold);
+  border: 2px solid var(--neon-gold);
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover {
+  background: var(--neon-gold);
+  color: #000;
+  box-shadow: 
+    0 0 20px var(--neon-gold),
+    0 0 50px var(--neon-blue);
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* Logout button specific style (optional tweak) */
+.header button {
+  padding: 8px 20px;
+  font-size: 0.8rem;
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+  box-shadow: 0 0 10px rgba(65, 105, 225, 0.2);
+}
+
+.header button:hover {
+  background: var(--neon-blue);
+  color: #fff;
+  box-shadow: 0 0 20px var(--neon-blue);
+}
+
+/* ---------- HISTORY LIST ---------- */
+pre {
+  white-space: pre-line;
+  font-family: 'Roboto', monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 3px solid var(--neon-gold);
+  color: #aaa;
+  line-height: 1.6;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050510; 
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neon-blue); 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-gold); 
+}
+</style>
