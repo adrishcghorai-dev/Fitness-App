@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards & Achievements - HealthLord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --blue: #4169E1;
+            --dark-bg: #0a0e27;
+            --glass-bg: rgba(10, 25, 60, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 40%, #0f1829 70%, #0a0e27 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background effects */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            top: -10%;
+            left: -5%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--blue) 0%, transparent 70%);
+            animation: float1 20s ease-in-out infinite;
+        }
+
+        body::after {
+            bottom: -10%;
+            right: -5%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+            animation: float2 25s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, 50px); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-60px, -40px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Back button */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: rgba(10, 25, 60, 0.8);
+            border-color: rgba(255, 215, 0, 0.4);
+            transform: translateX(-5px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        /* Top Summary Card */
+        .summary-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1.5px solid rgba(255, 215, 0, 0.3);
+            border-radius: 28px;
+            padding: 50px 40px;
+            margin-bottom: 50px;
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                0 0 60px rgba(255, 215, 0, 0.15),
+                inset 0 1px 2px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease 0.2s both;
+            transition: all 0.4s ease;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 
+                0 16px 50px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(255, 215, 0, 0.25),
+                inset 0 1px 2px rgba(255, 255, 255, 0.15);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+        }
+
+        .summary-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 8px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            letter-spacing: -0.03em;
+        }
+
+        .summary-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Section Headers */
+        .section-header {
+            margin: 60px 0 30px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, var(--gold) 0%, var(--blue) 100%);
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .section-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            padding-left: 16px;
+        }
+
+        /* Badges Grid */
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .badge-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .badge-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+            border-radius: 50%;
+        }
+
+        .badge-card:hover::before {
+            width: 200%;
+            height: 200%;
+        }
+
+        .badge-card.unlocked {
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+        }
+
+        .badge-card.unlocked:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.3);
+        }
+
+        .badge-card.locked {
+            opacity: 0.5;
+            filter: grayscale(0.7);
+        }
+
+        .badge-card.locked:hover {
+            opacity: 0.7;
+            transform: translateY(-3px);
+        }
+
+        .badge-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+            position: relative;
+            z-index: 1;
+            transition: all 0.4s ease;
+        }
+
+        .badge-card.unlocked .badge-icon {
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+        }
+
+        .badge-card:hover .badge-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .badge-lock {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            opacity: 0.6;
+            z-index: 2;
+        }
+
+        .badge-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-card.unlocked .badge-title {
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .badge-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Challenges Section */
+        .challenges-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .challenge-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .challenge-card:hover {
+            border-color: rgba(65, 105, 225, 0.4);
+            transform: translateX(5px);
+            box-shadow: 0 8px 30px rgba(65, 105, 225, 0.2);
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .challenge-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .challenge-reward {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .progress-container {
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--blue) 100%);
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-percentage {
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        /* Points History */
+        .history-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            max-height: 500px;
+            overflow-y: auto;
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .history-card::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-card::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .history-card::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .history-card::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.5);
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item:hover {
+            padding-left: 10px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 4px;
+        }
+
+        .history-activity {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .history-points {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Stagger animations */
+        .badge-card:nth-child(1) { animation-delay: 0.1s; }
+        .badge-card:nth-child(2) { animation-delay: 0.15s; }
+        .badge-card:nth-child(3) { animation-delay: 0.2s; }
+        .badge-card:nth-child(4) { animation-delay: 0.25s; }
+        .badge-card:nth-child(5) { animation-delay: 0.3s; }
+        .badge-card:nth-child(6) { animation-delay: 0.35s; }
+        .badge-card:nth-child(7) { animation-delay: 0.4s; }
+        .badge-card:nth-child(8) { animation-delay: 0.45s; }
+
+        .challenge-card:nth-child(1) { animation-delay: 0.1s; }
+        .challenge-card:nth-child(2) { animation-delay: 0.2s; }
+        .challenge-card:nth-child(3) { animation-delay: 0.3s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 15px;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+            }
+
+            .summary-card {
+                padding: 35px 25px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .badges-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-btn {
+                top: 20px;
+                left: 20px;
+                padding: 10px 18px;
+            }
+
+            .summary-value {
+                font-size: 2.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#" class="back-btn" onclick="goBack()">
+        <span>←</span> Dashboard
+    </a>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Rewards & Achievements</h1>
+            <p class="page-subtitle">Your journey to greatness, one milestone at a time</p>
+        </div>
+
+        <!-- Top Summary Card -->
+        <div class="summary-card">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-icon">⭐</span>
+                    <div class="summary-value">2,450</div>
+                    <div class="summary-label">Total Points</div>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-icon">🔥</span>
+                    <div class="summary-value">14</div>
+                    <div class="summary-label">Day Streak</div>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-icon">🏆</span>
+                    <div class="summary-value">Elite</div>
+                    <div class="summary-label">Current Level</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges Section -->
+        <div class="section-header">
+            <h2 class="section-title">Achievement Badges</h2>
+            <p class="section-subtitle">Unlock badges by completing workouts and challenges</p>
+        </div>
+
+        <div class="badges-grid">
+            <div class="badge-card unlocked">
+                <span class="badge-icon">🎯</span>
+                <h3 class="badge-title">First Workout</h3>
+                <p class="badge-description">Completed your first workout session</p>
+            </div>
+
+            <div class="badge-card unlocked">
+                <span class="badge-icon">🔥</span>
+                <h3 class="badge-title">7-Day Streak</h3>
+                <p class="badge-description">Maintained a 7-day workout streak</p>
+            </div>
+
+            <div class="badge-card unlocked">
+                <span class="badge-icon">💪</span>
+                <h3 class="badge-title">Consistency King</h3>
+                <p class="badge-description">14 consecutive days of training</p>
+            </div>
+
+            <div class="badge-card unlocked">
+                <span class="badge-icon">⚡</span>
+                <h3 class="badge-title">500 Calories</h3>
+                <p class="badge-description">Burned 500 calories in a single workout</p>
+            </div>
+
+            <div class="badge-card locked">
+                <span class="badge-lock">🔒</span>
+                <span class="badge-icon">🌟</span>
+                <h3 class="badge-title">30-Day Champion</h3>
+                <p class="badge-description">Complete 30 days without missing a workout</p>
+            </div>
+
+            <div class="badge-card locked">
+                <span class="badge-lock">🔒</span>
+                <span class="badge-icon">💎</span>
+                <h3 class="badge-title">1000 Calories</h3>
+                <p class="badge-description">Burn 1000 calories in one session</p>
+            </div>
+
+            <div class="badge-card locked">
+                <span class="badge-lock">🔒</span>
+                <span class="badge-icon">👑</span>
+                <h3 class="badge-title">Legend Status</h3>
+                <p class="badge-description">Reach 10,000 total points</p>
+            </div>
+
+            <div class="badge-card locked">
+                <span class="badge-lock">🔒</span>
+                <span class="badge-icon">🚀</span>
+                <h3 class="badge-title">Elite Warrior</h3>
+                <p class="badge-description">Complete 100 total workouts</p>
+            </div>
+        </div>
+
+        <!-- Challenges Section -->
+        <div class="section-header">
+            <h2 class="section-title">Active Challenges</h2>
+            <p class="section-subtitle">Complete challenges to earn bonus points</p>
+        </div>
+
+        <div class="challenges-grid">
+            <div class="challenge-card">
+                <div class="challenge-header">
+                    <h3 class="challenge-title">Complete 5 workouts this week</h3>
+                    <div class="challenge-reward">
+                        <span>+200</span>
+                        <span>⭐</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" style="width: 60%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span>3 of 5 completed</span>
+                        <span class="progress-percentage">60%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-header">
+                    <h3 class="challenge-title">Burn 2000 calories this week</h3>
+                    <div class="challenge-reward">
+                        <span>+150</span>
+                        <span>⭐</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" style="width: 75%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span>1500 / 2000 calories</span>
+                        <span class="progress-percentage">75%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-header">
+                    <h3 class="challenge-title">Maintain a 7-day streak</h3>
+                    <div class="challenge-reward">
+                        <span>+100</span>
+                        <span>⭐</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" style="width: 85%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span>6 of 7 days</span>
+                        <span class="progress-percentage">85%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Points History -->
+        <div class="section-header">
+            <h2 class="section-title">Points History</h2>
+            <p class="section-subtitle">Recent activity and rewards</p>
+        </div>
+
+        <div class="history-card">
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-29 09:30 AM</div>
+                    <div class="history-activity">Completed Full Body Workout</div>
+                </div>
+                <div class="history-points">+50</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-28 06:15 PM</div>
+                    <div class="history-activity">14-Day Streak Bonus</div>
+                </div>
+                <div class="history-points">+100</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-28 07:45 AM</div>
+                    <div class="history-activity">Completed Cardio Session</div>
+                </div>
+                <div class="history-points">+40</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-27 08:00 AM</div>
+                    <div class="history-activity">Completed Strength Training</div>
+                </div>
+                <div class="history-points">+50</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-26 06:30 PM</div>
+                    <div class="history-activity">Challenge Completed</div>
+                </div>
+                <div class="history-points">+150</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-26 09:00 AM</div>
+                    <div class="history-activity">Completed Morning Yoga</div>
+                </div>
+                <div class="history-points">+30</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-25 07:30 AM</div>
+                    <div class="history-activity">Completed HIIT Workout</div>
+                </div>
+                <div class="history-points">+60</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-24 06:00 PM</div>
+                    <div class="history-activity">7-Day Streak Achievement</div>
+                </div>
+                <div class="history-points">+100</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-24 08:15 AM</div>
+                    <div class="history-activity">Completed Core Workout</div>
+                </div>
+                <div class="history-points">+45</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-date">2026-01-23 07:00 AM</div>
+                    <div class="history-activity">Completed Full Body Workout</div>
+                </div>
+                <div class="history-points">+50</div>
+            </div>
+        </div>
+    </div>
