@@ -54,7 +54,7 @@ function setProgress(id, sec) {
 }
 
 function show(section) {
-  ["dashboard", "workout"].forEach(id =>
+  ["dashboard", "workout", "workoutPlans"].forEach(id =>
     document.getElementById(id).style.display = "none"
   );
   document.getElementById(section).style.display = "block";
@@ -73,6 +73,28 @@ window.startWorkout = type => {
   document.getElementById("pauseBtn").innerText = "Pause";
 
   show("workout");
+
+  /* ---------- WORKOUT PLANS ---------- */
+window.showWorkoutPlans = () => {
+  show("workoutPlans");
+};
+
+window.selectWorkoutPlan = async (planType) => {
+  const user = auth.currentUser;
+  const userRef = doc(db, "users", user.uid);
+  
+  await setDoc(userRef, {
+    selectedPlan: planType,
+    planStartDate: today()
+  }, { merge: true });
+  
+  show("dashboard");
+  loadDashboard(user);
+};
+
+window.viewPlanDetails = (planFile) => {
+  window.open(planFile, '_blank');
+};
 
   interval = setInterval(() => {
     if (!paused) {
@@ -114,6 +136,13 @@ async function loadDashboard(user) {
   const uSnap = await getDoc(doc(db, "users", user.uid));
   userData = uSnap.data();
   document.getElementById("goal").innerText = userData.goal.replace("_", " ");
+  
+  // Display selected workout plan
+  if (userData.selectedPlan) {
+    document.getElementById("currentPlan").innerText = userData.selectedPlan.toUpperCase();
+  } else {
+    document.getElementById("currentPlan").innerText = "None selected";
+  }
 
   /* today progress */
   const tSnap = await getDoc(doc(db, "users", user.uid, "workouts", today()));
@@ -156,16 +185,21 @@ window.logout = async () => {
 
 <style>
 body { margin:0;font-family:Arial;background:#0f2027;color:white }
-.header{background:#1e1e1e;padding:15px;display:flex;justify-content:space-between}
+.header{background:#1e1e1e;padding:15px;display:flex;justify-content:space-between;align-items:center}
 .card{background:#1e1e1e;margin:15px;padding:20px;border-radius:12px}
-.exercise-grid{display:flex;gap:20px}
+.exercise-grid{display:flex;gap:20px;flex-wrap:wrap}
 .exercise{text-align:center;cursor:pointer}
 circle{fill:none;stroke-width:8}
 .bg{stroke:#333}
 .progress{stroke:#ff7a18;stroke-dasharray:283;stroke-dashoffset:283;
 transform:rotate(-90deg);transform-origin:50% 50%}
-#workout{display:none;text-align:center;padding-top:40px}
-button{background:#ff7a18;border:none;padding:10px 20px;border-radius:8px;font-weight:bold}
+#workout, #workoutPlans{display:none;text-align:center;padding-top:40px}
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px}
+.plan-card{background:#2a2a2a;padding:20px;border-radius:12px;cursor:pointer;border:2px solid transparent;transition:all 0.3s}
+.plan-card:hover{border-color:#ff7a18;transform:translateY(-5px)}
+.plan-card h3{color:#ff7a18;margin-top:0}
+button{background:#ff7a18;border:none;padding:10px 20px;border-radius:8px;font-weight:bold;cursor:pointer;color:white;margin:5px}
+button:hover{background:#ff8c3a}
 pre{white-space:pre-line}
 </style>
 </head>
@@ -174,15 +208,19 @@ pre{white-space:pre-line}
 
 <div class="header">
   <h3>Fitness Dashboard</h3>
-  <button onclick="logout()">Logout</button>
+  <div>
+    <button onclick="showWorkoutPlans()">Workout Plans</button>
+    <button onclick="logout()">Logout</button>
+  </div>
 </div>
 
 <div id="dashboard">
 
   <div class="card">
-    <h3>Goal: <span id="goal"></span></h3>
-    <p>🔥 Calories Today: <strong id="todayCal">0</strong></p>
-  </div>
+  <h3>Goal: <span id="goal"></span></h3>
+  <p>🔥 Calories Today: <strong id="todayCal">0</strong></p>
+  <p>📋 Current Plan: <strong id="currentPlan">None</strong></p>
+</div>
 
   <div class="card">
     <h3>Today's Workouts</h3>
@@ -226,6 +264,35 @@ pre{white-space:pre-line}
   <button id="pauseBtn" onclick="togglePause()">Pause</button>
   <br><br>
   <button onclick="finishWorkout()">Finish Workout</button>
+</div>
+
+<div id="workoutPlans">
+  <h2>Choose Your Workout Plan</h2>
+  <div class="plan-grid">
+    
+    <div class="plan-card" onclick="selectWorkoutPlan('beginner')">
+      <h3>🌱 Beginner Plan</h3>
+      <p>Perfect for getting started with fitness</p>
+      <p><strong>Duration:</strong> 4 weeks</p>
+      <button onclick="event.stopPropagation(); viewPlanDetails('beginner-plan.html')">View Details</button>
+    </div>
+
+    <div class="plan-card" onclick="selectWorkoutPlan('intermediate')">
+      <h3>💪 Intermediate Plan</h3>
+      <p>Build strength and endurance</p>
+      <p><strong>Duration:</strong> 6 weeks</p>
+      <button onclick="event.stopPropagation(); viewPlanDetails('intermediate-plan.html')">View Details</button>
+    </div>
+
+    <div class="plan-card" onclick="selectWorkoutPlan('advanced')">
+      <h3>🔥 Advanced Plan</h3>
+      <p>High-intensity training program</p>
+      <p><strong>Duration:</strong> 8 weeks</p>
+      <button onclick="event.stopPropagation(); viewPlanDetails('advanced-plan.html')">View Details</button>
+    </div>
+
+  </div>
+  <button onclick="show('dashboard')">Back to Dashboard</button>
 </div>
 
 </body>
