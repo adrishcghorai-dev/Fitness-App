@@ -121,10 +121,19 @@ window.finishWorkout = async () => {
   const snap = await getDoc(ref);
   const prev = snap.exists() ? snap.data() : {};
 
-  await setDoc(ref, {
-    [activeWorkout]: (prev[activeWorkout] || 0) + seconds,
-    calories: (prev.calories || 0) + Math.round(calories)
-  }, { merge: true });
+  const creditsEarned = Math.floor(seconds / 30);
+
+await setDoc(ref, {
+  [activeWorkout]: (prev[activeWorkout] || 0) + seconds,
+  calories: (prev.calories || 0) + Math.round(calories),
+  creditsEarned: (prev.creditsEarned || 0) + creditsEarned
+}, { merge: true });
+
+// Update total user credits
+await setDoc(doc(db, "users", user.uid), {
+  credits: (userData.credits || 0) + creditsEarned
+}, { merge: true });
+
 
   show("dashboard");
   loadDashboard(user);
@@ -132,11 +141,22 @@ window.finishWorkout = async () => {
 
 /* ---------- DASHBOARD ---------- */
 async function loadDashboard(user) {
+  
   /* user info */
   const uSnap = await getDoc(doc(db, "users", user.uid));
   userData = uSnap.data();
   document.getElementById("goal").innerText = userData.goal.replace("_", " ");
-  
+  document.getElementById("credits").innerText = userData.credits || 0;
+
+  // Ensure credits field exists
+if (userData.credits === undefined) {
+  await setDoc(doc(db, "users", user.uid), {
+    credits: 0
+  }, { merge: true });
+
+  userData.credits = 0;
+}
+
   // Display selected workout plan
   if (userData.selectedPlan) {
     document.getElementById("currentPlan").innerText = userData.selectedPlan.toUpperCase();
@@ -181,6 +201,9 @@ window.logout = async () => {
   await signOut(auth);
   window.location.href = "sign.html";
 };
+
+
+
 </script>
 
 <style>
@@ -215,6 +238,12 @@ pre{white-space:pre-line}
 </div>
 
 <div id="dashboard">
+  <div class="card">
+  <h3>Goal: <span id="goal"></span></h3>
+  <p>🔥 Calories Today: <strong id="todayCal">0</strong></p>
+  <p>⭐ Credits: <strong id="credits">0</strong></p>
+  <p>📋 Current Plan: <strong id="currentPlan">None</strong></p>
+</div>
 
   <div class="card">
   <h3>Goal: <span id="goal"></span></h3>
