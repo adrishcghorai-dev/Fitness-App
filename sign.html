@@ -28,6 +28,80 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    <script type="module">
+/*Today date */
+const today = new Date().toISOString().split("T")[0];
+
+/*Auth listener */
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return;
+
+  console.log("Logged in:", user.uid);
+
+  /*Users collection*/
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      email: user.email,
+      totalPoints: 0,
+      lastWorkoutDate: ""
+    });
+  }
+
+  /*Daily workout */
+  const workoutRef = doc(db, "dailyWorkouts", `${user.uid}_${today}`);
+  const workoutSnap = await getDoc(workoutRef);
+
+  if (!workoutSnap.exists()) {
+    await setDoc(workoutRef, {
+      userId: user.uid,
+      date: today,
+      completed: false,
+      exercises: [
+        { name: "Push-ups", reps: 15 },
+        { name: "Squats", reps: 20 },
+        { name: "Plank", reps: "30 sec" }
+      ]
+    });
+    console.log("Today's workout created");
+  } else {
+    console.log("Workout already exists");
+  }
+
+  /*Show points*/
+  const updatedUser = await getDoc(userRef);
+  document.getElementById("points").innerText =
+    updatedUser.data().totalPoints;
+});
+
+/*Complete Workout*/
+window.completeWorkout = async function () {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const workoutRef = doc(db, "dailyWorkouts", `${user.uid}_${today}`);
+  const workoutSnap = await getDoc(workoutRef);
+
+  if (!workoutSnap.exists()) return;
+
+  if (workoutSnap.data().completed) {
+    alert("Workout already completed!");
+    return;
+  }
+
+  await updateDoc(workoutRef, { completed: true });
+
+  const userRef = doc(db, "users", user.uid);
+  await updateDoc(userRef, {
+    totalPoints: increment(10),
+    lastWorkoutDate: today
+  });
+
+  alert("Workout completed! +10 points 💪");
+};
+
     window.toggleForm = function () {
       document.getElementById("loginForm").classList.toggle("hidden");
       document.getElementById("signupForm").classList.toggle("hidden");
@@ -146,6 +220,12 @@
 </head>
 
 <body>
+  <h3>Your Points: <span id="points">0</span></h3>
+
+<button onclick="completeWorkout()">
+  Complete Today's Workout
+</button>
+
 <div class="container">
   <h2 id="title">Login</h2>
 
@@ -185,3 +265,4 @@
 </div>
 </body>
 </html>
+
