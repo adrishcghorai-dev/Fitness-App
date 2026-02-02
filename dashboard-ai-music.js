@@ -1,5 +1,6 @@
 const aiChatContainer = document.getElementById('aiChatContainer');
 const aiInput = document.getElementById('aiInput');
+const GEMINI_API_KEY = "AIzaSyDUrmton9H_fm3jfA0rkvSA94iWdM3agN0";
 
 // Send AI message
 async function sendAIMessage() {
@@ -14,43 +15,56 @@ async function sendAIMessage() {
     showTypingIndicator();
 
     try {
-        // Call Anthropic API
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'anthropic-version': '2023-06-01'
-            },
-            body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
-                max_tokens: 1000,
-                messages: [{
-                    role: 'user',
-                    content: `You are a fitness and health expert. Provide helpful, accurate, and motivating advice about fitness, workouts, nutrition, and health. Keep responses concise and actionable. User question: ${message}`
-                }]
-            })
-        });
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        role: "user",
+                        parts: [{
+                            text: `You are a fitness and health expert. 
+Provide helpful, accurate, and motivating advice about fitness, workouts, nutrition, and health.
+Keep responses concise and actionable.
+
+User question: ${message}`
+                        }]
+                    }]
+                })
+            }
+        );
 
         const data = await response.json();
-        
+
         // Remove typing indicator
         removeTypingIndicator();
 
         // Add AI response
-        if (data.content && data.content[0] && data.content[0].text) {
-            addAIMessage(data.content[0].text, 'ai');
-        } else if (data.error) {
-            addAIMessage(`I'm having trouble right now. Error: ${data.error.message}`, 'ai');
+        if (
+            data.candidates &&
+            data.candidates[0] &&
+            data.candidates[0].content &&
+            data.candidates[0].content.parts &&
+            data.candidates[0].content.parts[0].text
+        ) {
+            addAIMessage(data.candidates[0].content.parts[0].text, 'ai');
         } else {
             addAIMessage("I'm here to help! Could you please rephrase your question?", 'ai');
         }
 
     } catch (error) {
-        console.error('AI Error:', error);
+        console.error('Gemini AI Error:', error);
         removeTypingIndicator();
-        addAIMessage("I'm having trouble connecting. The AI service is available in Claude.ai artifacts. For now, I can help with basic fitness questions!", 'ai');
+        addAIMessage(
+            "I'm having trouble connecting right now. Please try again in a moment 💪",
+            'ai'
+        );
     }
 }
+
 
 function addAIMessage(text, type) {
     const messageDiv = document.createElement('div');
