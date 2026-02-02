@@ -17,18 +17,20 @@ async function sendAIMessage() {
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        role: "user",
-                        parts: [{
-                            text: `You are a fitness and health expert.
-Provide helpful, accurate, and motivating advice.
-Keep responses concise and actionable.
+               body: JSON.stringify({
+    contents: [
+        {
+            role: "user",
+            parts: [{ text: message }]
+        }
+    ],
+    systemInstruction: {
+        parts: [{
+            text: "You are a fitness and health expert. Provide helpful, accurate, motivating, concise, and actionable fitness advice."
+        }]
+    }
+})
 
-User question: ${message}`
-                        }]
-                    }]
-                })
             }
         );
 
