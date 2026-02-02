@@ -7,11 +7,8 @@ async function sendAIMessage() {
     const message = aiInput.value.trim();
     if (!message) return;
 
-    // Add user message
     addAIMessage(message, 'user');
     aiInput.value = '';
-
-    // Show typing indicator
     showTypingIndicator();
 
     try {
@@ -19,15 +16,13 @@ async function sendAIMessage() {
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
             {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{
                         role: "user",
                         parts: [{
-                            text: `You are a fitness and health expert. 
-Provide helpful, accurate, and motivating advice about fitness, workouts, nutrition, and health.
+                            text: `You are a fitness and health expert.
+Provide helpful, accurate, and motivating advice.
 Keep responses concise and actionable.
 
 User question: ${message}`
@@ -38,32 +33,36 @@ User question: ${message}`
         );
 
         const data = await response.json();
-
-        // Remove typing indicator
         removeTypingIndicator();
 
-        // Add AI response
-        if (
-            data.candidates &&
-            data.candidates[0] &&
-            data.candidates[0].content &&
-            data.candidates[0].content.parts &&
-            data.candidates[0].content.parts[0].text
-        ) {
-            addAIMessage(data.candidates[0].content.parts[0].text, 'ai');
-        } else {
-            addAIMessage("I'm here to help! Could you please rephrase your question?", 'ai');
+        let aiReply = "";
+        if (data.candidates?.length) {
+            aiReply = data.candidates[0].content.parts
+                .map(p => p.text)
+                .join("")
+                .trim();
         }
 
-    } catch (error) {
-        console.error('Gemini AI Error:', error);
+        if (aiReply) {
+            addAIMessage(aiReply, 'ai');
+        } else {
+            console.error("Gemini raw response:", data);
+            addAIMessage(
+                "I didn’t get a clear response. Please try again 💪",
+                'ai'
+            );
+        }
+
+    } catch (err) {
+        console.error("Gemini Error:", err);
         removeTypingIndicator();
         addAIMessage(
-            "I'm having trouble connecting right now. Please try again in a moment 💪",
+            "Connection issue. Please try again shortly 🔄",
             'ai'
         );
     }
 }
+
 
 
 function addAIMessage(text, type) {
