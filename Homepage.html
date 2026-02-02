@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthLord - Your Fitness Journey</title>
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="healthlord-styles.css">
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZunpvvg849oe1iM5Otbp4DlBdHMO9nbg",
+            authDomain: "fitnessapp-9e628.firebaseapp.com",
+            projectId: "fitnessapp-9e628",
+            storageBucket: "fitnessapp-9e628.firebasestorage.app",
+            messagingSenderId: "1003393693095",
+            appId: "1:1003393693095:web:59ba4600e685e77b9e7282",
+            measurementId: "G-GFW49JWKDG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDB = db;
+        window.firebaseInitialized = true;
+
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.setDoc = setDoc;
+        window.doc = doc;
+    </script>
+</head>
+<body>
+    <div class="slider-container">
+        <!-- Slide 1: Welcome -->
+        <div class="slide active" data-slide="1">
+            <div class="slide-header">
+                <div class="slide-number">SLIDE 1 OF 5</div>
+                <h1 class="slide-title">Welcome to HealthLord</h1>
+                <p class="slide-subtitle">Your AI-Powered Fitness Companion</p>
+            </div>
+
+            <div class="slide-content">
+                <div class="big-icon">💪</div>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <div class="feature-title">Smart Goals</div>
+                        <div class="feature-desc">Set personalized fitness goals tailored to your lifestyle</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-title">Track Progress</div>
+                        <div class="feature-desc">Monitor your journey with detailed analytics</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <div class="feature-title">AI Workouts</div>
+                        <div class="feature-desc">Get AI-generated routines based on your data</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <div class="feature-title">Earn Rewards</div>
+                        <div class="feature-desc">Stay motivated with achievements and milestones</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Setup & Login -->
+        <div class="slide" data-slide="2">
+            <div class="slide-header">
+                <div class="slide-number">SLIDE 2 OF 5</div>
+                <h1 class="slide-title">Easy Setup & Login</h1>
+                <p class="slide-subtitle">Start your journey in seconds</p>
+            </div>
+            <div class="slide-content">
+                <div class="list-item">
+                    <strong>🔐 Quick Authentication</strong>
+                    <p>Sign in with email/password or use Google Authentication for instant access</p>
+                </div>
+                <div class="list-item">
+                    <strong>👤 User Profile</strong>
+                    <p>Enter your name, fitness goals, and available workout time to personalize your experience</p>
+                </div>
+                <div class="list-item">
+                    <strong>⚡ Energy Level Selection</strong>
+                    <p>Tell us how energetic you feel, and we'll adapt workout intensity accordingly</p>
+                </div>
+                <div class="list-item">
+                    <strong>🎯 Fixed Workout Plans</strong>
+                    <p>Choose from predefined routines based on your selected goals</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Daily Workouts & Navigation -->
+        <div class="slide" data-slide="3">
+            <div class="slide-header">
+                <div class="slide-number">SLIDE 3 OF 5</div>
+                <h1 class="slide-title">Your Daily Workout</h1>
+                <p class="slide-subtitle">Simple, effective, and motivating</p>
+            </div>
+            <div class="slide-content">
+                <div class="big-icon">📱</div>
+                <div class="list-item">
+                    <strong>📅 Today's Workout Screen</strong>
+                    <p>View your daily plan with a button to mark completion and track your series</p>
+                </div>
+                <div class="list-item">
+                    <strong>🧭 Simple Navigation</strong>
+                    <p>Clear flow from login to workout ensures ease of use and quick access</p>
+                </div>
+                <div class="list-item">
+                    <strong>📈 Progress Tracking</strong>
+                    <p>Track workout streaks and total sessions to stay consistent</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Advanced Features -->
+        <div class="slide" data-slide="4">
+            <div class="slide-header">
+                <div class="slide-number">SLIDE 4 OF 5</div>
+                <h1 class="slide-title">Advanced Features</h1>
+                <p class="slide-subtitle">Powered by AI & Machine Learning</p>
+            </div>
+            <div class="slide-content">
+                <div class="advanced-grid">
+                    <div class="advanced-card">
+                        <div class="icon">🤖</div>
+                        <div class="title">GenAI Workouts</div>
+                        <div class="desc">AI generates routines based on goals and location</div>
+                    </div>
+                    <div class="advanced-card">
+                        <div class="icon">🧠</div>
+                        <div class="title">Adaptive Training</div>
+                        <div class="desc">Adjusts difficulty based on performance history</div>
+                    </div>
+                    <div class="advanced-card">
+                        <div class="icon">🔔</div>
+                        <div class="title">Smart Alerts</div>
+                        <div class="desc">Reminders when workouts are missed</div>
+                    </div>
+                    <div class="advanced-card">
+                        <div class="icon">📚</div>
+                        <div class="title">ML Learning</div>
+                        <div class="desc">Learns patterns from skipped workouts</div>
+                    </div>
+                    <div class="advanced-card">
+                        <div class="icon">🎤</div>
+                        <div class="title">AI Coach</div>
+                        <div class="desc">Voice-based explanations & motivation</div>
+                    </div>
+                    <div class="advanced-card">
+                        <div class="icon">📊</div>
+                        <div class="title">Fitness Report</div>
+                        <div class="desc">Weekly activity & calorie summaries</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Get Started with Workout Plans -->
+        <div class="slide" data-slide="5">
+            <div class="slide-header">
+                <div class="slide-number">SLIDE 5 OF 5</div>
+                <h1 class="slide-title">Choose Your Plan</h1>
+                <p class="slide-subtitle">Select the perfect workout plan for your fitness level</p>
+            </div>
+            <div class="slide-content">
+                <div class="workout-plans-section">
+
+                    <div class="section-intro">
+                        <h2>Workout Plans</h2>
+                        <p>Professional training programs designed for every fitness level</p>
+                    </div>
+
+                    <div class="plans-grid">
+                        <!-- Beginner Plan -->
+                        <div class="plan-card">
+                            <span class="plan-icon">🌱</span>
+                            <h3 class="plan-title">Beginner</h3>
+                            <span class="plan-level">Level 1</span>
+                            <div class="plan-details">
+                                <p><strong>Duration:</strong> 4 weeks</p>
+                                <p><strong>Frequency:</strong> 3 days/week</p>
+                                <p><strong>Focus:</strong> Building foundation & form</p>
+                            </div>
+                            <button class="plan-btn" onclick="window.location.href='beginner.html'">
+                                Start Beginner Plan
+                            </button>
+                        </div>
+
+                        <!-- Intermediate Plan -->
+                        <div class="plan-card">
+                            <span class="plan-icon">💪</span>
+                            <h3 class="plan-title">Intermediate</h3>
+                            <span class="plan-level">Level 2</span>
+                            <div class="plan-details">
+                                <p><strong>Duration:</strong> 6 weeks</p>
+                                <p><strong>Frequency:</strong> 4-5 days/week</p>
+                                <p><strong>Focus:</strong> Intensity & endurance</p>
+                            </div>
+                            <button class="plan-btn" onclick="window.location.href='intermediate.html'">
+                                Start Intermediate Plan
+                            </button>
+                        </div>
+
+                        <!-- Advanced Plan -->
+                        <div class="plan-card">
+                            <span class="plan-icon">🔥</span>
+                            <h3 class="plan-title">Advanced</h3>
+                            <span class="plan-level">Level 3</span>
+                            <div class="plan-details">
+                                <p><strong>Duration:</strong> 8 weeks</p>
+                                <p><strong>Frequency:</strong> 5-6 days/week</p>
+                                <p><strong>Focus:</strong> Elite performance</p>
+                            </div>
+                            <button class="plan-btn" onclick="window.location.href='advanced.html'">
+                                Start Advanced Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Login Page with Firebase -->
+        <div class="slide" data-slide="6">
+            <div class="login-container">
+                <div class="welcome-text">
+                    <h2>Welcome Back!</h2>
+                    <p>Continue your journey to a healthier you</p>
+                </div>
+
+                <!-- Login Form -->
+                <div id="loginFormSlide">
+                    <div class="login-inputs">
+                        <input type="email" class="app-input" id="loginEmail" placeholder="Email Address" autocomplete="email">
+                        <input type="password" class="app-input" id="loginPassword" placeholder="Password" autocomplete="current-password">
+                    </div>
+
+                    <button class="btn btn-primary sound-btn-login" id="loginBtn">
+                        <span>Log In</span>
+                    </button>
+
+                    <div class="divider">
+                        <span><b>OR CONTINUE WITH</b></span>
+                    </div>
+
+                    <div class="social-login">
+                        <button class="social-btn sound-btn-login" title="Google Sign In">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+                            </svg>
+                        </button>
+                        <button class="social-btn sound-btn-login" title="Facebook Sign In">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M17.525,9H14V7c0-1.032,0.084-1.682,1.563-1.682h1.868v-3.18C16.522,2.044,15.608,1.998,14.693,2C11.98,2,10,3.657,10,6.699V9H7v4l3-0.001V22h4v-9.003l3.066-0.001L17.525,9z"/>
+                            </svg>
+                        </button>
+                        <button class="social-btn sound-btn-login" title="Apple Sign In">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="footer-text">
+                        Don't have an account? <a href="#" class="sound-btn-login" id="showSignupForm">Sign up now</a>
+                    </div>
+                </div>
+
+                <!-- Signup Form (Hidden by default) -->
+                <div id="signupFormSlide" style="display: none;">
+                    <div class="signup-inputs">
+                        <input type="text" class="app-input" id="signupName" placeholder="Full Name" autocomplete="name">
+                        <input type="email" class="app-input" id="signupEmail" placeholder="Email Address" autocomplete="email">
+                        <input type="password" class="app-input" id="signupPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
+                        <input type="number" class="app-input" id="signupAge" placeholder="Age" min="1" max="120">
+
+                        <select class="app-input" id="signupGender">
+                            <option value="">Select Gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+
+                        <input type="number" class="app-input" id="signupHeight" placeholder="Height (cm)" min="1">
+                        <input type="number" class="app-input" id="signupWeight" placeholder="Weight (kg)" min="1">
+
+                        <select class="app-input" id="signupGoal">
+                            <option value="">Fitness Goal</option>
+                            <option>Lose Weight</option>
+                            <option>Gain Muscle</option>
+                            <option>Stay Fit</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-secondary sound-btn-login" id="signupBtn">
+                        <span>Create Account</span>
+                    </button>
+
+                    <div class="footer-text">
+                        Already have an account? <a href="#" class="sound-btn-login" id="showLoginForm">Log in</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" disabled>← Previous</button>
+            <div class="pagination">
+                <span class="dot active" data-slide="1"></span>
+                <span class="dot" data-slide="2"></span>
+                <span class="dot" data-slide="3"></span>
+                <span class="dot" data-slide="4"></span>
+                <span class="dot" data-slide="5"></span>
+                <span class="dot" data-slide="6"></span>
+            </div>
+            <button class="nav-btn" id="nextBtn">Next →</button>
+            <button class="nav-btn get-started" id="getStartedBtn" style="display: none;">Get Started 🚀</button>
+        </div>
+    </div>
+  <style>
+        .workout-plans-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+        }
+
+        .section-intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-intro h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .section-intro p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .plan-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 122, 24, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+            border-radius: 50%;
+        }
+
+        .plan-card:hover::before {
+            width: 200%;
+            height: 200%;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary-orange);
+            box-shadow: 0 15px 40px rgba(255, 122, 24, 0.3);
+        }
+
+        .plan-icon {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(255, 122, 24, 0.5));
+            transition: transform 0.4s ease;
+        }
+
+        .plan-card:hover .plan-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .plan-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-orange);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .plan-level {
+            display: inline-block;
+            background: rgba(255, 122, 24, 0.2);
+            color: var(--primary-orange);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .plan-details {
+            color: var(--text-secondary);
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        .plan-details strong {
+            color: var(--text-primary);
+        }
+
+        .plan-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .plan-btn:hover {
+            background: var(--primary-orange-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 122, 24, 0.4);
+        }
+
+
+        @media (max-width: 768px) {
+            .section-intro h2 {
+                font-size: 2rem;
+            }
+
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+    </style>
+    <script src="homescript.js"></script>
+</body>
+</html>
