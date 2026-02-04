@@ -28,7 +28,7 @@ This project was created as part of the **Websprint 2026** event to build practi
 - 🎨 **Responsive UI**  
   Designed with HTML, CSS, and JavaScript to be accessible and visually appealing.
 
-*(Customize this section with more specific features if your project has extra components like API integration, user authentication, or progress tracking tools.)*
+
 
 ## 🗂️ Project Structure
 Fitness-App/
