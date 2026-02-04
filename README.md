@@ -46,3 +46,15 @@ Fitness-App/
 ├── dashboard-ai-music.js
 └── README.md
 
+# ⚠️ Firebase Configuration Notice
+
+This project uses Firebase services.
+For security reasons, Firebase API keys and configuration values
+are not included in this public repository.
+
+To run the project locally:
+1. Create a Firebase project
+2. Enable required services (Auth / Firestore / Storage)
+3. Replace the placeholder values in `firebaseConfig`
+   with your own Firebase project credentials
+
