@@ -1,6 +1,6 @@
 const aiChatContainer = document.getElementById('aiChatContainer');
 const aiInput = document.getElementById('aiInput');
-const GEMINI_API_KEY = "AIzaSyDUrmton9H_fm3jfA0rkvSA94iWdM3agN0";
+const GEMINI_API_KEY = "_YOUR_API_";
 
 // Send AI message
 async function sendAIMessage() {
